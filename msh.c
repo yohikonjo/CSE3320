@@ -32,75 +32,15 @@ pid_t pids[15];
 int pid_count = 0;
 
 /*Functions*/
-void add_cmd(char *new_cmd)
-{
-  char *temp[15];
-  int i;
-  int j = 1;
-  if(cmd_count < 15)
-  {
-    hist[cmd_count] = malloc(strlen(new_cmd)+1);
-    strcpy(hist[cmd_count], new_cmd);
-    cmd_count++;
-  }
-  else
-  {
-    for(i = 0; i < 14; i++)
-    {
-      temp[i] = malloc(strlen(hist[j] + 1));
-      strcpy(temp[i], hist[j]);
-      free(hist[j]);
-      j++;
-    }
-    j = 1;
-    free(hist[0]);
-    temp[14] = malloc(strlen(new_cmd+1));
-    strcpy(temp[14], new_cmd);
-    for(i = 0; i < 15; i++)
-    {
-      hist[i] = malloc(strlen(temp[i]+1));
-      strcpy(hist[i], temp[i]);
-    } 
-  }/*
-  printf("\tcmd_count is %d\n\tCurrent history array is:\n", cmd_count);
-  for(i = 0; i < 15; i++)
-  {
-    printf("\t%s\n", hist[i]);
-  } */
-} 
-
-void add_pid(pid_t pid)
-{
-  int i;
-  int j = 1;
-  pid_t temp[15];
-  if(pid_count < 15)
-  {
-    pids[pid_count] = pid;
-    pid_count++;
-  } 
-  else 
-  {
-    for(i = 0; i < 14; i++)
-    {
-      temp[i] = pids[j];
-      j++;
-    }
-    j = 1;
-    temp[14] = pid;
-    for(i = 0; i < 15; i++)
-    {
-      pids[i] = temp[i];
-    }
-  }
-}
+void add_cmd(char *new_cmd);
+void add_pid(pid_t pid);
 
 int main()
 {
 
   char *cmd_str = (char*) malloc( MAX_COMMAND_SIZE );
   char history_queue[MAX_NUM_ENTRIES][MAX_COMMAND_SIZE];
-  int counter = 0;      				//Counts number of commands inputed by the user 
+  int counter = 0;      //Counts number of commands inputed by the user 
   while(1)
   {
     // Print out the msh prompt
@@ -121,8 +61,6 @@ int main()
     {
       continue;
     }
-    // Function call to add command to global history array
-    //add_cmd(cmd_str);
 
     /* Parse input */
     char *token[MAX_NUM_ARGUMENTS];
@@ -134,7 +72,8 @@ int main()
     char *argument_ptr;                                         
                                                            
     char *working_str  = strdup( cmd_str );                
-   
+
+    // Function call to add command to global history array
     add_cmd(working_str);
     
     // we are going to move the working_str pointer so
@@ -165,20 +104,16 @@ int main()
       arguments[i] = token[j];
       j++; 
     }
-   /* 
-    printf("\n");
-    for(i = 0; i < MAX_NUM_ARGUMENTS -1; i++)
-    {
-      printf("%s  ", arguments[i]);
-    }
-    printf("\n");*/
-	
+
+    /*Checks if the requested command exists in history and if so will re-run the command*/
     if(token[0][0] == '!')
     {
       int num;
+      /*Convert the string after the '!' into an integer*/
       char *sub = malloc(strlen(token[0]));
       sub = token[0] + 1;
       num = atoi(sub);
+      
       if(num > 15 || num > cmd_count)
       {
         printf("Command is out of bounds of the current history.\n");
@@ -227,17 +162,21 @@ int main()
 	  printf("%s: Command not found.\n\n", token[0]);
         }
       }
-    }  
+    }
+
+    /*Program exit check*/
     else if (strcmp(token[0], "exit") == 0)
     {
       exit(0);
     }
-   
+
+    /*Program exit check*/
     else if(strcmp(token[0], "quit") == 0)
     {
       exit(0);
     }
 
+    /*Prints upto the last 15 commands entered into the shell*/
     else if(strcmp(token[0], "history") == 0)
     {
       int i;
@@ -254,6 +193,7 @@ int main()
       }
     }
 
+    /*Prints the PIDs of upto the last 15 commands entered into the shell*/
     else if(strcmp(token[0], "showpids") == 0)
     {
       int i; 
@@ -270,6 +210,7 @@ int main()
       }
     }
 
+    /*Directory change impementation*/
     else if(strcmp(token[0], "cd") == 0)
     {
       chdir(token[1]);
@@ -299,5 +240,65 @@ int main()
 
   }
   return 0;
+}
+
+/*Updates the history with the new command entered*/
+void add_cmd(char *new_cmd)
+{
+  char *temp[15];
+  int i;
+  int j = 1;
+  if(cmd_count < 15)
+  {
+    hist[cmd_count] = malloc(strlen(new_cmd)+1);
+    strcpy(hist[cmd_count], new_cmd);
+    cmd_count++;
+  }
+  else
+  {
+    for(i = 0; i < 14; i++)
+    {
+      temp[i] = malloc(strlen(hist[j] + 1));
+      strcpy(temp[i], hist[j]);
+      free(hist[j]);
+      j++;
+    }
+    j = 1;
+    free(hist[0]);
+    temp[14] = malloc(strlen(new_cmd+1));
+    strcpy(temp[14], new_cmd);
+    for(i = 0; i < 15; i++)
+    {
+      hist[i] = malloc(strlen(temp[i]+1));
+      strcpy(hist[i], temp[i]);
+    } 
+  }
+}
+
+/*Updates the PIDS with the PID of the new command entered*/
+void add_pid(pid_t pid)
+{
+  int i;
+  int j = 1;
+  pid_t temp[15];
+  if(pid_count < 15)
+  {
+    pids[pid_count] = pid;
+    pid_count++;
+  } 
+  else 
+  {
+    for(i = 0; i < 14; i++)
+    {
+      temp[i] = pids[j];
+      j++;
+    }
+    j = 1;
+    temp[14] = pid;
+    for(i = 0; i < 15; i++)
+    {
+      pids[i] = temp[i];
+    }
+  }
 }
 
