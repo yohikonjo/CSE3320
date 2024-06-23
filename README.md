@@ -1,5 +1,5 @@
 # MavShell
-Mav shell(msh) is a shell program amde in C similar to bourne shell(bash), c-shell(csh), or korn shell(ksh). It accepts and executes common unix commands, and forks a child process. The msh like csh and ksh will keeping running and accepting commands until the user exits the shell.
+Mav shell(msh) is a shell program made in C similar to bourne shell(bash), c-shell(csh), or korn shell(ksh). It accepts and executes common unix commands, and forks a child process. The msh like csh and ksh will keeping running and accepting commands until the user exits the shell.
 # Features
 •	Input string tokenization    
 •	Forking of different processes    
